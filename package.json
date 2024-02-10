@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-zway-plugin",
+  "name": "@c0d3r22/homebridge-zway-plugin-c0d3r22",
   "version": "1.0.5",
   "description": "homebridge-plugin for ZWay Server and RaZBerry",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jmichas/homebridge-zway-plugin.git"
+    "url": "git+https://github.com/c0d3r22/homebridge-zway-plugin-c0d3r22.git"
   },
   "preferGlobal": true,
   "keywords": [
@@ -34,10 +34,13 @@
     "nyc": "*",
     "qunit": "*"
   },
-  "author": "jmichas (https://github.com/jmichas)",
+  "author": "c0d3r22 (https://github.com/c0d3r22)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jmichas/homebridge-zway-plugin/issues"
+    "url": "https://github.com/c0d3r22/homebridge-zway-plugin-c0d3r22/issues"
   },
-  "homepage": "https://github.com/jmichas/homebridge-zway-plugin#readme"
+  "homepage": "https://github.com/c0d3r22/homebridge-zway-plugin-c0d3r22#readme",
+  "directories": {
+    "test": "tests"
+  }
 }
