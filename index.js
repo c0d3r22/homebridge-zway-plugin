@@ -22,6 +22,8 @@ function ZWayServerPlatform(log, config){
     this.dimmerOffThreshold = config["dimmer_off_threshold"] === undefined ? 5 : config["dimmer_off_threshold"];
     this.lastUpdate   = 0;
     this.cxVDevMap    = {};
+    this.vDevBoolState = {};
+    this.vDevLastPercentage = {};
     this.vDevStore    = {};
     this.sessionId = "";
     this.jar = request.jar(new tough.CookieJar());
@@ -403,7 +405,7 @@ ZWayServerPlatform.prototype = {
                             var oldValue = cx.value;
                             var newValue = cx.zway_getValueFromVDev(vdev);
                             //debug("Update Item " + cx.displayName + " : " + vdev.metrics.title);
-                            //debug("oldValue = " + oldValue + ", newValue = " + newValue);
+                            debug("oldValue = " + oldValue + ", newValue = " + newValue);
                             //debug("Types: oldValue = " + typeof(oldValue) + ", newValue = " + typeof(newValue));
                             if(oldValue !== newValue){
                                 cx.value = newValue;
@@ -763,6 +765,23 @@ ZWayServerAccessory.prototype = {
                 debug("powerOn = " + powerOn + " | vdev.metrics.level == " + vdev.metrics.level);
                 //debug("vdev = " + JSON.stringify(vdev));
                 if((powerOn && (vdev.metrics.level == 0 || vdev.metrics.level === "off")) || !powerOn){ //check to see if it is already on? level == 0 seems to be off
+                    if (!powerOn)
+                    {
+                        // If powering off, save the current percentage level
+                        this.platform.vDevLastPercentage[vdev.id] = vdev.metrics.level;
+                        this.platform.cxVDevMap[vdev.id].value = vdev.metrics.level;
+                        // Also set the bool state
+                        this.platform.vDevBoolState[vdev.id] = false;
+
+                        debug("c0d3r22::Saving off the current percentage level => " + vdev.metrics.level);
+                        debug("c0d3r22::Saving off the current bool state => " + this.platform.vDevBoolState[vdev.id]);
+                        debug("c0d3r22::Updating cxVDevMap value => " + this.platform.cxVDevMap[vdev.id].value);
+                    }
+                    else
+                    {
+                        // Also set the bool state
+                        this.platform.vDevBoolState[vdev.id] = true;
+                    }
                     this.command(vdev, powerOn ? "on" : "off").then(function(result){
                         debug("power on result = " + JSON.stringify(result));
                         callback();
@@ -814,6 +833,7 @@ ZWayServerAccessory.prototype = {
 
         if(cx instanceof Characteristic.Brightness || cx instanceof Characteristic.RotationSpeed){
             cx.zway_getValueFromVDev = function(vdev){
+                debug("c0d3r22:: Current value in vdev.metrics.level => " + vdev.metrics.level);
                 return vdev.metrics.level;
             };
             cx.value = cx.zway_getValueFromVDev(vdev);
@@ -825,6 +845,15 @@ ZWayServerAccessory.prototype = {
                 });
             }.bind(this));
             cx.on('set', interlock(function(level, callback){
+                debug("c0d3r22::Current power state for " + vdev.metrics.title + ": " + vdev.metrics.level + "%");
+                debug("c0d3r22::Current bool state for " + vdev.metrics.title + ": " + this.platform.vDevBoolState[vdev.id]);
+                if (this.platform.vDevBoolState[vdev.id] == false && vdev.metrics.level == 0)
+                {
+                    level = this.platform.vDevLastPercentage[vdev.id];
+                    vdev.metrics.level = level;
+                    this.platform.cxVDevMap[vdev.id].value = level;
+                    debug("c0d3r22::Setting the stored value as the initial state: " + level);
+                }
                 debug("Setting value for " + vdev.metrics.title + ", characteristic \"" + cx.displayName + "\"...");
                 debug("level \""+ level +"\"");
                 this.command(vdev, "exact", {level: parseInt(level, 10)}).then(function(result){
