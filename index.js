@@ -387,6 +387,7 @@ ZWayServerPlatform.prototype = {
             this.lastUpdate = result.data.updateTime;
             if(result.data && result.data.devices && result.data.devices.length){
                 var updates = result.data.devices;
+                debug("c0d3r22::updates => " + updates);
                 //debug("Got " + updates.length + " updates.");
                 for(var i = 0; i < updates.length; i++){
                     var upd = updates[i];
@@ -851,7 +852,6 @@ ZWayServerAccessory.prototype = {
                 {
                     level = this.platform.vDevLastPercentage[vdev.id];
                     vdev.metrics.level = level;
-                    this.platform.cxVDevMap[vdev.id].value = level;
                     debug("c0d3r22::Setting the stored value as the initial state: " + level);
                 }
                 debug("Setting value for " + vdev.metrics.title + ", characteristic \"" + cx.displayName + "\"...");
