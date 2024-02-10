@@ -405,6 +405,10 @@ ZWayServerPlatform.prototype = {
                             if(typeof cx.zway_getValueFromVDev !== "function") continue;
                             var oldValue = cx.value;
                             var newValue = cx.zway_getValueFromVDev(vdev);
+                            if (oldValue >= 99)
+                            {
+                                oldValue = newValue;
+                            }
                             //debug("Update Item " + cx.displayName + " : " + vdev.metrics.title);
                             debug("oldValue = " + oldValue + ", newValue = " + newValue);
                             //debug("Types: oldValue = " + typeof(oldValue) + ", newValue = " + typeof(newValue));
