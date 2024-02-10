@@ -387,7 +387,6 @@ ZWayServerPlatform.prototype = {
             this.lastUpdate = result.data.updateTime;
             if(result.data && result.data.devices && result.data.devices.length){
                 var updates = result.data.devices;
-                debug("c0d3r22::updates => " + JSON.stringify(updates, null, 4));
                 //debug("Got " + updates.length + " updates.");
                 for(var i = 0; i < updates.length; i++){
                     var upd = updates[i];
@@ -402,6 +401,7 @@ ZWayServerPlatform.prototype = {
                         var cxs = this.cxVDevMap[upd.id];
                         for(var j = 0; j < cxs.length; j++){
                             var cx = cxs[j];
+                            debug("c0d3r22::updates => " + JSON.stringify(cx, null, 4));
                             if(typeof cx.zway_getValueFromVDev !== "function") continue;
                             var oldValue = cx.value;
                             var newValue = cx.zway_getValueFromVDev(vdev);
